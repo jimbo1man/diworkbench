@@ -1,0 +1,10 @@
+{
+  "artifact": "pattern_engine",
+  "summary": "No forbidden changes or blockers detected.",
+  "overall_decision": "APPROVE",
+  "allowed": [],
+  "forbidden": [],
+  "blockers": [],
+  "saved_at": "2026-03-25T19:21:46.280537",
+  "loop": 0
+}

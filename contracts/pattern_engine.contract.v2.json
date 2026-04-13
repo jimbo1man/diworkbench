@@ -1,0 +1,22 @@
+{
+  "artifact": "pattern_engine",
+  "schema_locked": true,
+  "locked_fields": [
+    "output.score",
+    "output.insights",
+    "canonical_record.metrics.<n>.value"
+  ],
+  "forbidden_changes": [
+    "remove_required_output",
+    "rename_locked_field",
+    "weaken_output_contract"
+  ],
+  "review_scope": [
+    "clarity",
+    "ambiguity",
+    "implementation_risk",
+    "missing_definition"
+  ],
+  "version": 2,
+  "saved_at": "2026-03-25T18:34:10.047533"
+}

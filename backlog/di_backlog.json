@@ -1,0 +1,62 @@
+{
+  "artifact": "di_backlog",
+  "updated_at": "2026-03-25T17:25:18.086593Z",
+  "items": [
+    {
+      "id": "BL-001",
+      "project": "DI Workbench",
+      "created_at": "2026-03-25T00:00:00Z",
+      "title": "Fix Streamlit direct run issue",
+      "status": "parking_lot",
+      "notes": "Direct `streamlit run app.py` fails, while launching from the desktop batch file works reliably. Likely environment/path mismatch. Deferred because the batch file is a working workaround."
+    },
+    {
+      "id": "BL-002",
+      "project": "DI Workbench",
+      "created_at": "2026-03-24T00:00:00Z",
+      "title": "Resolve DI Workbench UI inconsistencies and rendering issues",
+      "status": "parking_lot",
+      "notes": "Frontend instability and rendering inconsistencies previously surfaced during DI Workbench iteration."
+    },
+    {
+      "id": "BL-003",
+      "project": "Lucy Platform",
+      "created_at": "2026-03-24T00:00:00Z",
+      "title": "Add additional Apple device data ingestion",
+      "status": "parking_lot",
+      "notes": "Expand beyond current health metrics to include additional Apple device data points such as Screen Time and other relevant signals."
+    },
+    {
+      "id": "BL-004",
+      "project": "Lucy Platform",
+      "created_at": "2026-03-23T00:00:00Z",
+      "title": "Build full data ingest layer beyond initial health metrics",
+      "status": "parking_lot",
+      "notes": "Needed for broader Behavior OS coverage and future multimodal/personal data ingestion."
+    },
+    {
+      "id": "BL-005",
+      "project": "DI Workbench",
+      "created_at": "2026-03-25T00:00:00Z",
+      "title": "Implement persistent backlog system inside Workbench",
+      "status": "complete",
+      "notes": "Artifact-backed JSON backlog has now been created inside the project."
+    },
+    {
+      "id": "BL-006",
+      "project": "DI Workbench",
+      "created_at": "2026-03-25T00:00:00Z",
+      "title": "Normalize package and import paths across engine modules",
+      "status": "parking_lot",
+      "notes": "Inconsistent root-vs-engine imports are causing runtime errors during app swaps and launcher differences. Standardize module structure and imports."
+    },
+    {
+      "id": "BL-007",
+      "project": "DI Workbench",
+      "created_at": "2026-03-25T00:00:00Z",
+      "title": "Establish DI Workbench Pattern Library (v1)",
+      "status": "parking_lot",
+      "notes": "Define reusable spec patterns (scoring engine, ingestion, insight generation, tool routing) to reduce architect friction, improve reviewer convergence, and enable scalable feature development without repeated spec design."
+    }
+  ]
+}

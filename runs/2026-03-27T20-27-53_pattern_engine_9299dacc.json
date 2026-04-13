@@ -1,0 +1,43 @@
+{
+  "run_id": "9299dacc-04a0-4861-8446-d313e40c7771",
+  "artifact_name": "pattern_engine",
+  "status": "drafted",
+  "architect_spec": "Objective\nDesign a daily health scoring engine that computes a fair daily score from available inputs, adjusts appropriately when some inputs are missing, and produces actionable insights that explain the score and identify improvement opportunities.\n\nContext\nThe system evaluates one daily record at a time. Each daily record may include sleep, workout, and meditation inputs. Some inputs may be missing on a given day.\n\nRequirements\n\nInput Model\n- sleep_hours: float or null (0.0-24.0)\n- workout_minutes: integer or null (0-300)\n- meditation_minutes: integer or null (0-180)\n\nOutput Contract\n- output.score: float (0.0-100.0, rounded to 1 decimal)\n- output.insights: list of 1-5 human-readable actionable strings\n",
+  "implementation_spec": "",
+  "execution_result": {},
+  "implementation_review": null,
+  "locked_contract": {
+    "artifact": "pattern_engine",
+    "schema_locked": true,
+    "locked_fields": [
+      "output.score",
+      "output.insights"
+    ],
+    "forbidden_changes": [],
+    "review_scope": [
+      "clarity",
+      "ambiguity",
+      "implementation_risk",
+      "missing_definition"
+    ]
+  },
+  "review_result": {
+    "decision": "PENDING",
+    "issues": []
+  },
+  "revision_patches": [],
+  "cost": {
+    "architect_input_tokens": 0,
+    "architect_output_tokens": 0,
+    "reviewer_input_tokens": 0,
+    "reviewer_output_tokens": 0,
+    "estimated_total_cost": 0.0,
+    "rerun_count": 0
+  },
+  "timestamps": {
+    "created_at": "2026-03-27T20:27:53.851580+00:00",
+    "updated_at": "2026-03-27T20:27:53.851786+00:00"
+  },
+  "metadata": {},
+  "last_action": "Idle"
+}

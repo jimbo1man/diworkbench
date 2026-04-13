@@ -1,0 +1,95 @@
+{
+  "run_id": "7024b3e7-28a8-41db-8ca8-6d207d3f01e1",
+  "artifact_name": "pattern_engine",
+  "status": "revise",
+  "architect_spec": "Objective\nDesign a daily health scoring engine that computes a fair daily score from available inputs, adjusts appropriately when some inputs are missing, and produces actionable insights that explain the score and identify improvement opportunities.\n\nContext\nThe system evaluates one daily record at a time. Each daily record may include sleep, workout, and meditation inputs. Some inputs may be missing on a given day.\n\nRequirements\n\nInput Model\n- sleep_hours: float or null (0.0-24.0)\n- workout_minutes: integer or null (0-300)\n- meditation_minutes: integer or null (0-180)\n\nOutput Contract\n- output.score: float (0.0-100.0, rounded to 1 decimal)\n- output.insights: list of 1-5 human-readable actionable strings\n",
+  "implementation_spec": "",
+  "execution_result": {},
+  "implementation_review": null,
+  "locked_contract": {
+    "artifact": "pattern_engine",
+    "schema_locked": true,
+    "locked_fields": [
+      "output.score",
+      "output.insights"
+    ],
+    "forbidden_changes": [],
+    "review_scope": [
+      "clarity",
+      "ambiguity",
+      "implementation_risk",
+      "missing_definition"
+    ]
+  },
+  "review_result": {
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "scoring_algorithm_missing",
+        "severity": "high",
+        "type": "missing_definition",
+        "scope": "allowed",
+        "target": "scoring methodology",
+        "message": "The spec does not define how the daily health score is calculated from the input parameters",
+        "proposed_fix": "Add detailed scoring algorithm including weights for each input, baseline values, and scoring curves"
+      },
+      {
+        "id": "missing_input_handling_undefined",
+        "severity": "high",
+        "type": "missing_definition",
+        "scope": "allowed",
+        "target": "missing input adjustment logic",
+        "message": "The spec mentions adjusting for missing inputs but provides no implementation details",
+        "proposed_fix": "Define specific strategies for handling null values (e.g., use averages, apply penalties, or exclude from calculation)"
+      },
+      {
+        "id": "insights_generation_ambiguous",
+        "severity": "medium",
+        "type": "ambiguity",
+        "scope": "allowed",
+        "target": "insights generation logic",
+        "message": "No clear rules for generating actionable insights or determining which insights to prioritize",
+        "proposed_fix": "Specify insight generation rules, templates, and prioritization criteria based on input values and score components"
+      },
+      {
+        "id": "fairness_criteria_undefined",
+        "severity": "medium",
+        "type": "missing_definition",
+        "scope": "allowed",
+        "target": "fairness definition",
+        "message": "The requirement for a 'fair' score lacks concrete definition or measurable criteria",
+        "proposed_fix": "Define fairness criteria such as consistent scoring across different input combinations and transparent weighting"
+      },
+      {
+        "id": "input_validation_missing",
+        "severity": "low",
+        "type": "missing_definition",
+        "scope": "allowed",
+        "target": "input validation rules",
+        "message": "No specification for handling invalid input values outside defined ranges",
+        "proposed_fix": "Add validation rules and error handling for out-of-range values"
+      }
+    ]
+  },
+  "revision_patches": [],
+  "cost": {
+    "architect_input_tokens": 920,
+    "architect_output_tokens": 6201,
+    "reviewer_input_tokens": 457,
+    "reviewer_output_tokens": 536,
+    "estimated_total_cost": 0.105186,
+    "rerun_count": 2
+  },
+  "timestamps": {
+    "created_at": "2026-03-30T14:32:32.926765+00:00",
+    "updated_at": "2026-03-30T14:35:18.894996+00:00"
+  },
+  "metadata": {
+    "last_action": "revise_allowed",
+    "review_result": "REVIEW_REVISE_ALLOWED",
+    "can_retry": true,
+    "terminal": false,
+    "status_summary": "Review found allowed issues; revision may proceed."
+  },
+  "last_action": "revise_allowed"
+}
