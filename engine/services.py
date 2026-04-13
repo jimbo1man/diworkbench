@@ -9,6 +9,7 @@ import anthropic
 import requests
 
 from .pipeline_models import ReviewState
+from .llm_json import LLMJSONParseError, parse_llm_json_response
 
 
 @dataclass(frozen=True)
@@ -17,6 +18,7 @@ class ClaudeReviewResult:
     reasoning: str
     proposed_revisions: str
     raw_response: str = ""
+    parse_error: str = ""
 
 
 @dataclass(frozen=True)
@@ -25,6 +27,7 @@ class ChatGPTAdjudicationResult:
     final_spec: str
     reasoning: str
     raw_response: str = ""
+    parse_error: str = ""
 
 
 class ClaudeReviewService(Protocol):
@@ -44,21 +47,6 @@ def _extract_anthropic_text(response: anthropic.types.Message) -> str:
         if isinstance(text, str) and text:
             parts.append(text)
     return "\n".join(parts).strip()
-
-
-def _extract_json_object(text: str) -> dict:
-    text = (text or "").strip()
-    try:
-        parsed = json.loads(text)
-        if isinstance(parsed, dict):
-            return parsed
-    except Exception:
-        pass
-    start = text.find("{")
-    end = text.rfind("}")
-    if start == -1 or end == -1 or end <= start:
-        raise ValueError("No JSON object found.")
-    return json.loads(text[start : end + 1])
 
 
 def _clamp_review_state(value: object) -> ReviewState:
@@ -103,13 +91,28 @@ class AnthropicClaudeReviewService:
         )
 
         raw_text = _extract_anthropic_text(response)
-        parsed = _extract_json_object(raw_text)
-        state = _clamp_review_state(parsed.get("state"))
-        if state == "NOT_RUN":
-            state = "REVISE"
-        reasoning = str(parsed.get("reasoning") or "").strip()
-        proposed = str(parsed.get("proposedRevisions") or "").strip()
-        return ClaudeReviewResult(state=state, reasoning=reasoning, proposed_revisions=proposed, raw_response=raw_text)
+        try:
+            parsed = parse_llm_json_response(raw_text)
+            state = _clamp_review_state(parsed.get("state"))
+            if state == "NOT_RUN":
+                state = "REVISE"
+            reasoning = str(parsed.get("reasoning") or "").strip()
+            proposed = str(parsed.get("proposedRevisions") or "").strip()
+            return ClaudeReviewResult(
+                state=state,
+                reasoning=reasoning,
+                proposed_revisions=proposed,
+                raw_response=raw_text,
+                parse_error="",
+            )
+        except LLMJSONParseError as e:
+            return ClaudeReviewResult(
+                state="REVISE",
+                reasoning="Reviewer returned an unparseable JSON response. See Debug / Advanced for raw output.",
+                proposed_revisions="",
+                raw_response=raw_text,
+                parse_error=str(e),
+            )
 
 
 class StubClaudeReviewService:
@@ -171,16 +174,21 @@ class OpenAIChatGPTAdjudicationService:
             "You are ChatGPT acting as a final adjudicator.\n"
             "You receive the original build spec plus Claude's gate decision, reasoning, and proposed revisions.\n"
             "Your job is to produce ONE clean final build spec artifact for Cursor to implement.\n\n"
-            "Return JSON only. No markdown fences. No extra keys.\n"
-            'Schema:\n{\n  "state": "APPROVE" | "REVISE" | "REJECT",\n'
-            '  "finalSpec": "single coherent implementation-ready spec (plain text)",\n'
-            '  "reasoning": "concise adjudication reasoning"\n}\n\n'
-            "Hard rules:\n"
-            "- One pass only. No loops.\n"
-            "- Do not output multiple alternatives.\n"
-            "- You are not exploring; you are finalizing.\n"
+            "Return EXACTLY ONE JSON OBJECT and nothing else.\n"
+            "Do not include markdown fences. Do not include prose before or after the JSON.\n"
+            "Do not include any keys other than those in the schema.\n\n"
+            "Schema (must match exactly):\n"
+            "{\n"
+            '  "state": "APPROVE" | "REVISE" | "REJECT",\n'
+            '  "reasoning": "short string",\n'
+            '  "final_spec": "full final implementation-ready spec as a string"\n'
+            "}\n\n"
+            "Rules:\n"
+            "- state must be one of APPROVE, REVISE, REJECT.\n"
+            "- final_spec must always be present (use empty string if REJECT).\n"
+            "- reasoning must be concise.\n"
+            "- One pass only. No loops. No alternatives.\n"
             "- Incorporate Claude's proposed revisions when beneficial.\n"
-            "- If the spec is not safe to implement, set state=REJECT.\n"
         )
         user_prompt = (
             f"Original spec:\n{(input_spec or '').strip()}\n\n"
@@ -208,11 +216,31 @@ class OpenAIChatGPTAdjudicationService:
         resp.raise_for_status()
         payload = resp.json()
         raw_text = str(payload.get("output_text") or "").strip()
-        parsed = _extract_json_object(raw_text)
-        state = _clamp_review_state(parsed.get("state"))
-        if state == "NOT_RUN":
-            state = "REVISE"
-        final_spec = str(parsed.get("finalSpec") or "").strip()
-        reasoning = str(parsed.get("reasoning") or "").strip()
-        return ChatGPTAdjudicationResult(state=state, final_spec=final_spec, reasoning=reasoning, raw_response=raw_text)
+        try:
+            parsed = parse_llm_json_response(raw_text)
+            state = _clamp_review_state(parsed.get("state"))
+            if state == "NOT_RUN":
+                state = "REVISE"
+
+            # Back-compat: accept either final_spec or finalSpec.
+            final_spec = str(
+                (parsed.get("final_spec") if "final_spec" in parsed else parsed.get("finalSpec")) or ""
+            ).strip()
+            reasoning = str(parsed.get("reasoning") or "").strip()
+            return ChatGPTAdjudicationResult(
+                state=state,
+                final_spec=final_spec,
+                reasoning=reasoning,
+                raw_response=raw_text,
+                parse_error="",
+            )
+        except LLMJSONParseError as e:
+            fallback_spec = (input_spec or "").strip()
+            return ChatGPTAdjudicationResult(
+                state="REVISE",
+                reasoning="Adjudicator returned an unparseable JSON response. Showing original spec as fallback. See Debug / Advanced for raw output.",
+                final_spec=fallback_spec,
+                raw_response=raw_text,
+                parse_error=str(e),
+            )
 

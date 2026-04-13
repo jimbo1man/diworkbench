@@ -39,6 +39,7 @@ class RunOrchestrator:
         wb.claude.reasoning = claude_out.reasoning
         wb.claude.proposed_revisions = claude_out.proposed_revisions
         wb.claude.raw_response = claude_out.raw_response or None
+        wb.claude.parse_error = getattr(claude_out, "parse_error", "") or None
 
         if wb.claude.state == "REJECT":
             wb.chatgpt.state = "NOT_RUN"
@@ -57,6 +58,7 @@ class RunOrchestrator:
         wb.chatgpt.final_spec = chat_out.final_spec
         wb.chatgpt.reasoning = chat_out.reasoning
         wb.chatgpt.raw_response = chat_out.raw_response or None
+        wb.chatgpt.parse_error = getattr(chat_out, "parse_error", "") or None
 
         return OrchestratorResult(run=wb, stopped=False, stop_reason="")
 

@@ -20,6 +20,7 @@ class ClaudeReviewBlock(BaseModel):
     reasoning: str = ""
     proposed_revisions: str = ""
     raw_response: Optional[str] = None
+    parse_error: Optional[str] = None
 
 
 class ChatGPTAdjudicationBlock(BaseModel):
@@ -27,6 +28,7 @@ class ChatGPTAdjudicationBlock(BaseModel):
     final_spec: str = ""
     reasoning: str = ""
     raw_response: Optional[str] = None
+    parse_error: Optional[str] = None
 
 
 class HumanDecisionBlock(BaseModel):

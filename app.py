@@ -163,6 +163,8 @@ else:
         st.info("No final spec because Claude rejected.")
     else:
         st.markdown(f"**ChatGPT state:** `{_badge(run.chatgpt.state)}`")
+        if run.chatgpt.parse_error:
+            st.error("ChatGPT adjudication output could not be parsed as JSON. Raw response is available in Debug / Advanced.")
         if run.chatgpt.reasoning:
             with st.expander("ChatGPT reasoning", expanded=False):
                 st.write(run.chatgpt.reasoning)
