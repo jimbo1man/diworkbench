@@ -1,6 +1,6 @@
 # DI Workbench v3
 
-A governed AI-assisted specification pipeline that enforces structured workflows across Architect, Reviewer, and Implementer roles. Built to formalize decision intelligence around spec development — ensuring contracts are honored, revisions stay in scope, and human escalation happens when it should.
+A governed AI-assisted specification pipeline that enforces structured workflows across Architect, Reviewer, and Implementer roles. Built to formalize decision intelligence around spec development, ensuring contracts are honored, revisions stay in scope, and human escalation happens when it should.
 
 ## What it does
 
